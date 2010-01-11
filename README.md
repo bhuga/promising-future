@@ -19,6 +19,8 @@ Futures run the evaluation of the block optimistically in another thread.
 Note that this is pretty useless in irb, which will evaluate everything
 as part of its read-eval-print loop.
 
+Yardocs are available at <http://promise.rubyforge.org/>
+
 ## Classes
 
  * {Promise}
