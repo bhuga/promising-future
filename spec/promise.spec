@@ -47,17 +47,19 @@ describe Promise do
     x = promise { res = 1; 3.times { res = res * 5 ; sleep 1 } ; res}
     threads = []
     results = []
+    changeds = []
     10.times do
       threads << Thread.new do
         changed = false
-        res = 125
-        10.times do
+        res = old_res = 125
+        10.times do |i|
           old_res = res
           res = x + 5
-          changed = true if res != old_res
+          changed ||= res != old_res && i != 0
           sleep 0.3
         end
         results << res
+        changeds << changed
       end
     end
     threads.each do |t|
@@ -66,6 +68,10 @@ describe Promise do
     results.each do |result|
       result.should == 130
     end
+    changeds.each do |changed|
+      changed.should == false
+    end
+    changeds.size.should == 10
   end
 
 end
