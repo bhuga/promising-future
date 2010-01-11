@@ -16,6 +16,11 @@ A glimpse of a promising future in which ruby supports delayed execution
 Promises and futures both transparantly delay the execution of a block.
 Futures run the evaluation of the block optimistically in another thread.
 
+## Classes
+
+ * {Promise}
+ * {Future}
+
 ## Author
 Ben Lavender (http://github.com/bhuga)
 

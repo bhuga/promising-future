@@ -1,10 +1,9 @@
-
 require 'promise'
 
 ##
 # A delayed-execution result, optimistcally evaluated in a new Thread.
 # @example
-#     x = { sleep 5; 1 + 2 }
+#     x = future { sleep 5; 1 + 2 }
 #     # do stuff...
 #     y = x * 2     # => 6.  blocks unless 5 seconds has passed.
 # 
@@ -27,7 +26,7 @@ class Future
   # @return [Any]
   def force
     @thread.join
-    @promise.result
+    @promise
   end
 
   # @private
@@ -41,6 +40,9 @@ end
 
 module Kernel
 
+  # Create a new future 
+  # @example
+  #     x = future { 3 + 3 }
   def future(&block)
     Future.new(block)
   end
