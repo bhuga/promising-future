@@ -16,6 +16,9 @@ A glimpse of a promising future in which ruby supports delayed execution
 Promises and futures both transparantly delay the execution of a block.
 Futures run the evaluation of the block optimistically in another thread.
 
+Note that this is pretty useless in irb, which will evaluate everything
+as part of its read-eval-print loop.
+
 ## Classes
 
  * {Promise}
