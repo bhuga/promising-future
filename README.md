@@ -21,6 +21,9 @@ Futures run the evaluation of the block optimistically in another thread.
  * {Promise}
  * {Future}
 
+## Source
+The source is available at <http://github.com/bhuga/promising-future>
+
 ## Author
 Ben Lavender (http://github.com/bhuga)
 

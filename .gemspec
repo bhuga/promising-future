@@ -5,12 +5,13 @@ GEMSPEC = Gem::Specification.new do |gem|
   gem.version            = File.read('VERSION').chomp
   gem.date               = File.mtime('VERSION').strftime('%Y-%m-%d')
 
-  gem.name               = 'promising-future'
-  gem.homepage           = 'http://quantity.rubyforge.org/'
+  gem.name               = 'promise'
+  gem.homepage           = 'http://promise.rubyforge.org/'
   gem.license            = 'Public Domain' if gem.respond_to?(:license=)
   gem.summary            = 'Promises and futures for Ruby'
   gem.description = <<-EOF
-    A glimpse into a promising future, in which ruby supports delayed execution...
+    A glimpse into a promising future, in which ruby supports delayed execution.
+    Provides 'promise' and 'future' functions.
   EOF
   gem.rubyforge_project  = 'promising-future'
 
