@@ -42,7 +42,7 @@ describe Future do
   end
 
   it "should be thread safe" do
-    x = future { res = 1; 3.times { res = res * 5 ; sleep 1 } }
+    x = future { res = 1; 3.times { res = res * 5 ; sleep 1 } ; res}
     threads = []
     results = []
     10.times do
@@ -62,7 +62,7 @@ describe Future do
       t.join
     end
     results.each do |result|
-      result.should == 120
+      result.should == 130
     end
   end
 

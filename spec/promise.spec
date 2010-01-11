@@ -29,5 +29,30 @@ describe Promise do
     x.should == 10
   end
 
+  it "should be thread safe" do
+    x = promise { res = 1; 3.times { res = res * 5 ; sleep 1 } ; res}
+    threads = []
+    results = []
+    10.times do
+      threads << Thread.new do
+        changed = false
+        res = 125
+        10.times do
+          old_res = res
+          res = x + 5
+          changed = true if res != old_res
+          sleep 0.3
+        end
+        results << res
+      end
+    end
+    threads.each do |t|
+      t.join
+    end
+    results.each do |result|
+      result.should == 130
+    end
+  end
+
 end
 
