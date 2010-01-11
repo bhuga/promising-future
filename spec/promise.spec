@@ -12,6 +12,20 @@ describe Promise do
     lambda {x = promise { | x | 3 + 5 }}.should raise_error
   end
 
+  it "should delay execution" do
+    value = 5
+    x = promise { value = 10 ; value }
+    value.should == 5
+    y = x + 5
+    y.should == 15
+    value.should == 10
+  end
+
+  it "should delay execution of invalid code" do
+    lambda {x = [ 1, x / 0 ]}.should raise_error
+    lambda {x = [ 1, promise { x / 0 }]}.should_not raise_error
+  end
+
   it "should be forceable" do
     x = promise { 3 + 5 }
     x.force.should == 8
