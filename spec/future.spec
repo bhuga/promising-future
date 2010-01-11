@@ -41,6 +41,30 @@ describe Future do
     (finish - start).should be_close 3, 10**-3
   end
 
+  it "should be thread safe" do
+    x = future { res = 1; 3.times { res = res * 5 ; sleep 1 } }
+    threads = []
+    results = []
+    10.times do
+      threads << Thread.new do
+        changed = false
+        res = 125
+        10.times do
+          old_res = res
+          res = x + 5
+          changed = true if res != old_res
+          sleep 0.3
+        end
+        results << res
+      end
+    end
+    threads.each do |t|
+      t.join
+    end
+    results.each do |result|
+      result.should == 120
+    end
+  end
 
 end
 
