@@ -26,6 +26,12 @@ Yardocs are available at <http://promise.rubyforge.org/>
  * {Promise}
  * {Future}
 
+## Installation
+
+Promising future is distributed via gemcutter under the name 'promise'.
+
+    gem install promise
+
 ## Source
 The source is available at <http://github.com/bhuga/promising-future>
 
