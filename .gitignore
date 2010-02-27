@@ -1,0 +1,4 @@
+doc
+coverage
+*.gem
+.yardoc
