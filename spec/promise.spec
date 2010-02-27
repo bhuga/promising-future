@@ -43,6 +43,30 @@ describe Promise do
     x.should == 10
   end
 
+  it "should remain the same for an object reference" do
+    h = {}
+    x = Object.new
+    h[:test] = promise { x }
+    h[:test].should == x
+  end
+
+  it "should not compute for an inspect" do
+    x = promise { 1 / 0 }
+    lambda {x.inspect}.should_not raise_error
+  end
+
+  it "should maintain eql?-ity for the result of a promise" do
+    x = Object.new
+    y = promise { x }
+    x.should eql y
+  end
+
+  it "should maintain equal?-ity for the result of a promise" do
+    x = Object.new
+    y = promise { x }
+    x.should equal y
+  end
+
   it "should be thread safe" do
     x = promise { res = 1; 3.times { res = res * 5 ; sleep 1 } ; res}
     threads = []
