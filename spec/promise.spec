@@ -50,11 +50,6 @@ describe Promise do
     h[:test].should == x
   end
 
-  it "should not compute for an inspect" do
-    x = promise { 1 / 0 }
-    lambda {x.inspect}.should_not raise_error
-  end
-
   it "should maintain eql?-ity for the result of a promise" do
     x = Object.new
     y = promise { x }
