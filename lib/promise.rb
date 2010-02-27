@@ -14,7 +14,7 @@
 #     x + 5     # => 15
 class Promise
 
-  instance_methods.each { |m| undef_method m unless m =~ /__/ }
+  instance_methods.each { |m| undef_method m unless m =~ /__|object_id/ }
 
   # Returns a new promise
   # @param [Proc] block
