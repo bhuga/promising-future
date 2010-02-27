@@ -4,7 +4,7 @@ A glimpse of a promising future in which ruby supports delayed execution
 ## Overview
 
     require 'promise'
-    require 'future'    # can just require future if using both
+    require 'future'    # you can just require future if using both
 
     x = promise { 1 + 2 }
     y = future  { sleep 10; 5 + 5 }
@@ -19,7 +19,8 @@ Futures run the evaluation of the block optimistically in another thread.
 Note that this is pretty useless in irb, which will evaluate everything
 as part of its read-eval-print loop.
 
-Yardocs are available at <http://promise.rubyforge.org/>
+Yardocs are available at <http://promise.rubyforge.org/>.  Tested under MRI 
+1.8 and JRuby.
 
 ## Classes
 
