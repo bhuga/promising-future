@@ -5,6 +5,12 @@ require 'time'
 
 describe Future do
 
+  if defined?(BasicObject)
+    it "should inherit from BasicObject if available, and not otherwise" do
+      Future.ancestors.should include BasicObject
+    end
+  end
+
   it "should be createable" do
     lambda {x = future { 3 + 5 }}.should_not raise_error
   end

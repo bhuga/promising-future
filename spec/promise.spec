@@ -4,6 +4,13 @@ require 'promise'
 
 describe Promise do
 
+
+  if defined?(BasicObject)
+    it "should inherit from BasicObject if available, and not otherwise" do
+      Promise.ancestors.should include BasicObject
+    end
+  end
+
   it "should be createable" do
     lambda {x = promise { 3 + 5 }}.should_not raise_error
   end
