@@ -1,4 +1,16 @@
 
+## 
+# Determine whether we have BasicObject available.  If so, we'll use it as a
+# base class.  Otherwise, we need to clean out a base class to build a promise
+# from.
+if defined?(BasicObject)
+  class Promise < BasicObject ; end
+else
+  class Promise
+    instance_methods.each { |m| undef_method m unless m =~ /__|object_id/ }
+  end
+end
+
 ##
 # A delayed-execution promise.  Promises are only executed once.
 # @example
@@ -14,8 +26,6 @@
 #     x + 5     # => 15
 class Promise
 
-  instance_methods.each { |m| undef_method m unless m =~ /__|object_id/ }
-
   # Returns a new promise
   # @param [Proc] block
   # @return [Promise]
@@ -24,7 +34,7 @@ class Promise
       raise ArgumentError, "Cannot store a promise that requires an argument"
     end
     @block = block
-    @mutex = Mutex.new
+    @mutex = ::Mutex.new
   end
 
   # Force the evaluation of this promise immediately
