@@ -1,16 +1,3 @@
-
-## 
-# Determine whether we have BasicObject available.  If so, we'll use it as a
-# base class.  Otherwise, we need to clean out a base class to build a promise
-# from.
-if defined?(BasicObject)
-  class Promise < BasicObject ; end
-else
-  class Promise
-    instance_methods.each { |m| undef_method m unless m =~ /__|object_id/ }
-  end
-end
-
 ##
 # A delayed-execution promise.  Promises are only executed once.
 # @example
@@ -24,7 +11,9 @@ end
 #     x = promise { y = y + 5 }
 #     x + 5     # => 15
 #     x + 5     # => 15
-class Promise
+class Promise < defined?(BasicObject) ? BasicObject : Object
+
+  instance_methods.each { |m| undef_method m unless m =~ /__|object_id/ } unless defined?(BasicObject)
 
   # Returns a new promise
   # @param [Proc] block

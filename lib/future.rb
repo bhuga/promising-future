@@ -7,16 +7,16 @@ require 'promise'
 #     # do stuff...
 #     y = x * 2     # => 6.  blocks unless 5 seconds has passed.
 # 
-class Future
-  
-  instance_methods.each { |m| undef_method m unless m =~ /__/ }
+class Future < defined?(BasicObject) ? BasicObject : Object
 
+  instance_methods.each { |m| undef_method m unless m =~ /__|object_id/ } unless defined?(BasicObject)
+  
   ##
   # @param [Proc] block
   # @return [Future]
   def initialize(block)
     @promise = promise &block
-    @thread = Thread.new do
+    @thread = ::Thread.new do
       @promise.force
     end
   end
