@@ -10,8 +10,8 @@ GEMSPEC = Gem::Specification.new do |gem|
   gem.license            = 'Public Domain' if gem.respond_to?(:license=)
   gem.summary            = 'Promises and futures for Ruby'
   gem.description = <<-EOF
-    A glimpse into a promising future, in which ruby supports delayed execution.
-    Provides 'promise' and 'future' functions.
+    A glimpse of a promising future in which Ruby supports delayed execution.
+    Provides global 'promise' and 'future' methods.
   EOF
   gem.rubyforge_project  = 'promising-future'
 
@@ -30,7 +30,7 @@ GEMSPEC = Gem::Specification.new do |gem|
 
   gem.required_ruby_version      = '>= 1.8.2'
   gem.requirements               = []
-  gem.add_development_dependency 'rspec', '>= 1.2.9'
-  gem.add_development_dependency 'yard' , '>= 0.5.2'
+  gem.add_development_dependency 'rspec', '>= 1.3.0'
+  gem.add_development_dependency 'yard' , '>= 0.5.6'
   gem.post_install_message       = nil
 end

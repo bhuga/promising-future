@@ -29,7 +29,7 @@ class Promise < defined?(BasicObject) ? BasicObject : Object
   # Force the evaluation of this promise immediately
   # @return [Any]
   def force
-    @mutex.synchronize do 
+    @mutex.synchronize do
       unless @result
         @result = @block.call
       end
@@ -44,7 +44,7 @@ class Promise < defined?(BasicObject) ? BasicObject : Object
 end
 
 module Kernel
-  
+
   # Create a new promise
   # @example
   #     x = promise { 3 + 3 }

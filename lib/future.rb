@@ -6,11 +6,11 @@ require 'promise'
 #     x = future { sleep 5; 1 + 2 }
 #     # do stuff...
 #     y = x * 2     # => 6.  blocks unless 5 seconds has passed.
-# 
+#
 class Future < defined?(BasicObject) ? BasicObject : Object
 
   instance_methods.each { |m| undef_method m unless m =~ /__|object_id/ } unless defined?(BasicObject)
-  
+
   ##
   # @param [Proc] block
   # @return [Future]
@@ -31,7 +31,7 @@ class Future < defined?(BasicObject) ? BasicObject : Object
 
   # @private
   def method_missing(method, *args, &block)
-    @promise.send(method, *args, &block) 
+    @promise.send(method, *args, &block)
   end
 
 
@@ -40,7 +40,7 @@ end
 
 module Kernel
 
-  # Create a new future 
+  # Create a new future
   # @example
   #     x = future { 3 + 3 }
   def future(&block)
