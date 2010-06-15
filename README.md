@@ -1,5 +1,5 @@
 # Promising Future
-A glimpse of a promising future in which Ruby supports delayed execution.
+A glimpse of a promising future in which Ruby supports lazy evaluation.
 
 ## Overview
 [Promises and futures][] both transparently defer the execution of a block.
