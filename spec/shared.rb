@@ -59,16 +59,16 @@ shared_examples_for "A Promise" do
   end
 
   it "should maintain eql?-ity for the result of a block" do
-    pending "This is an RSpec problem; works fine elsewhere"
     x = Object.new
     y = @method.call { x }
+    y.should eql x
     x.should eql y
   end
 
   it "should maintain equal?-ity for the result of a block" do
-    pending "This is an RSpec problem; works fine elsewhere"
     x = Object.new
     y = @method.call { x }
+    y.should equal x
     x.should equal y
   end
 
