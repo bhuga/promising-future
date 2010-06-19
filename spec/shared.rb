@@ -13,7 +13,7 @@ shared_examples_for "A Promise" do
 
   it "should be forceable" do
     x = @method.call { 3 + 5 }
-    x.force.should == 8
+    x.__force__.should == 8
     x.should == 8
   end
 
@@ -38,7 +38,7 @@ shared_examples_for "A Promise" do
 
   it "should raise exceptions raised during execution when accessed" do
     y = Object.new
-    lambda { y = @method.call { 1 / 0 } }.should_not raise_error
+    y = @method.call { 1 / 0 }
     lambda { y.inspect }.should raise_error ZeroDivisionError
     lambda { y.inspect }.should raise_error ZeroDivisionError
   end
