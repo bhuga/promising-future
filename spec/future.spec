@@ -26,8 +26,8 @@ describe Future do
     y = x + 5
     y.should == 10
     finish = Time.now
-    (middle - start).should be_close 0, 10**-3
-    (finish - start).should be_close 3, 10**-3
+    (middle - start).should be_close 0, 10**-2
+    (finish - start).should be_close 3, 10**-2
   end
 
 end
