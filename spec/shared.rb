@@ -58,18 +58,21 @@ shared_examples_for "A Promise" do
     h[:test].should == x
   end
 
-  it "should maintain eql?-ity for the result of a block" do
+  it "should be eql? for results" do
     x = Object.new
     y = @method.call { x }
     y.should eql x
-    x.should eql y
+    # this would be ideal, but it can't be done in Ruby.  result
+    # objects that have a redefined #eql? should do fine.  
+    #x.should eql y
   end
 
-  it "should maintain equal?-ity for the result of a block" do
+  it "should be equal? for results" do
     x = Object.new
     y = @method.call { x }
     y.should equal x
-    x.should equal y
+    # this would be ideal, but it can't be done in Ruby.
+    #x.should equal y
   end
 
   it "should be thread safe" do
