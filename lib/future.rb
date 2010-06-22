@@ -33,6 +33,15 @@ class Future < defined?(BasicObject) ? BasicObject : Object
   end
   alias_method :force, :__force__
 
+  ##
+  # Does this promise support the given method?
+  #
+  # @param  [Symbol]
+  # @return [true, false]
+  def respond_to?(method)
+    (method == :force) || (method == :__force__) || (__force__.respond_to?(method))
+  end
+
   # @private
   def method_missing(method, *args, &block)
     @promise.send(method, *args, &block)

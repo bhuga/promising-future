@@ -17,6 +17,26 @@ shared_examples_for "A Promise" do
     x.should == 8
   end
 
+  it "should respond_to? force" do
+    x = @method.call { 3 + 5 }
+    x.respond_to?(:force).should be_true
+  end
+
+  it "should respond_to? __force__" do
+    x = @method.call { 3 + 5 }
+    x.respond_to?(:__force__).should be_true
+  end
+
+  it "should respond_to? a method on the result" do
+    x = @method.call { 3 + 5 }
+    x.respond_to?(:+).should be_true
+  end
+
+  it "should not respond_to? a method not on the result" do
+    x = @method.call { 3 + 5 }
+    x.respond_to?(:asdf).should be_false
+  end
+
   it "should evaluate to a value" do
     (5 + @method.call { 1 + 2 }).should == 8
   end
