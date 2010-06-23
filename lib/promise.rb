@@ -12,25 +12,24 @@
 #     x + 5     # => 15
 #     x + 5     # => 15
 class Promise < defined?(BasicObject) ? BasicObject : ::Object
+  NOT_SET = ::Object.new.freeze
 
   instance_methods.each { |m| undef_method m unless m.to_s =~ /__/ }
 
-  NOT_SET = ::Object.new.freeze
-
   ##
-  # Create a new promise
+  # Creates a new promise.
   #
   # @example Lazily evaluate a database call
-  #     result = promise { @db.query("SELECT * FROM TABLE") }
-  # @param [Proc] block
-  # @return [Promise]
-  # @see Kernel#promise
-  def initialize(block)
+  #   result = promise { @db.query("SELECT * FROM TABLE") }
+  #
+  # @yield  [] The block to evaluate lazily.
+  # @see    Kernel#promise
+  def initialize(&block)
     if block.arity > 0
       raise ArgumentError, "Cannot store a promise that requires an argument"
     end
-    @block = block
-    @mutex = ::Mutex.new
+    @block  = block
+    @mutex  = ::Mutex.new
     @result = NOT_SET
     @error  = NOT_SET
   end
@@ -71,16 +70,18 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
 end
 
 module Kernel
-
-  # Create a new promise
+  ##
+  # Creates a new promise.
   #
   # @example Lazily evaluate an arithmetic operation
-  #     x = promise { 3 + 3 }
-  # @return       [Promise]
-  # @yield        [] A block to be lazily evaluated
-  # @yieldreturn  [Any] The return value of the block will be the lazily evaluated value of the promise. 
+  #   x = promise { 3 + 3 }
+  #
+  # @return      [Promise]
+  # @yield       []
+  #   A block to be lazily evaluated.
+  # @yieldreturn [Any]
+  #   The return value of the block will be the lazily evaluated value of the promise.
   def promise(&block)
-    Promise.new(block)
+    Promise.new(&block)
   end
-
 end
