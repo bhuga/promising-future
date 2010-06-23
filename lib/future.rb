@@ -28,7 +28,7 @@ class Future < defined?(BasicObject) ? BasicObject : Object
   #
   # @return [Any]
   def __force__
-    @thread.join
+    @thread.join if @thread
     @promise
   end
   alias_method :force, :__force__
@@ -42,12 +42,11 @@ class Future < defined?(BasicObject) ? BasicObject : Object
     :force.equal?(method) || :__force__.equal?(method) || __force__.respond_to?(method)
   end
 
-  # @private
+  private
+
   def method_missing(method, *args, &block)
-    @promise.send(method, *args, &block)
+    __force__.__send__(method, *args, &block)
   end
-
-
 end
 
 

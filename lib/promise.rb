@@ -63,9 +63,10 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
     :force.equal?(method) || :__force__.equal?(method) || __force__.respond_to?(method)
   end
 
+  private
+
   def method_missing(method, *args, &block)
-    __force__
-    @result.send(method, *args, &block)
+    __force__.__send__(method, *args, &block)
   end
 end
 
