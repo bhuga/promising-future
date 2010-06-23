@@ -39,7 +39,7 @@ class Future < defined?(BasicObject) ? BasicObject : Object
   # @param  [Symbol]
   # @return [true, false]
   def respond_to?(method)
-    (method == :force) || (method == :__force__) || (__force__.respond_to?(method))
+    :force.equal?(method) || :__force__.equal?(method) || __force__.respond_to?(method)
   end
 
   # @private

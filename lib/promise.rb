@@ -41,16 +41,16 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
   # @return [Any]
   def __force__
     @mutex.synchronize do
-      if @result == NOT_SET && @error == NOT_SET
+      if @result.equal?(NOT_SET) && @error.equal?(NOT_SET)
         begin
           @result = @block.call
         rescue ::Exception => e
           @error = e
         end
       end
-    end if @result == NOT_SET && @error == NOT_SET
+    end if @result.equal?(NOT_SET) && @error.equal?(NOT_SET)
     # BasicObject won't send raise to Kernel
-    @error.equal?(NOT_SET) ? @result : (::Kernel.raise @error)
+    @error.equal?(NOT_SET) ? @result : ::Kernel.raise(@error)
   end
   alias_method :force, :__force__
 
@@ -60,7 +60,7 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
   # @param  [Symbol]
   # @return [true, false]
   def respond_to?(method)
-    (method == :force) || (method == :__force__) || (__force__.respond_to?(method))
+    :force.equal?(method) || :__force__.equal?(method) || __force__.respond_to?(method)
   end
 
   def method_missing(method, *args, &block)
