@@ -1,16 +1,19 @@
 ##
 # A delayed-execution promise.  Promises are only executed once.
+#
 # @example
-#     x = promise { factorial 20 }
-#     y = promise { fibonacci 10**6 }
-#     a = x + 1     # => factorial 20 + 1 after factorial calculates
-#     result = promise { a += y }
-#     abort ""      # whew, we never needed to calculate y
+#   x = promise { factorial 20 }
+#   y = promise { fibonacci 10**6 }
+#   a = x + 1     # => factorial 20 + 1 after factorial calculates
+#   result = promise { a += y }
+#   abort ""      # whew, we never needed to calculate y
+#
 # @example
-#     y = 5
-#     x = promise { y = y + 5 }
-#     x + 5     # => 15
-#     x + 5     # => 15
+#   y = 5
+#   x = promise { y = y + 5 }
+#   x + 5     # => 15
+#   x + 5     # => 15
+#
 class Promise < defined?(BasicObject) ? BasicObject : ::Object
   NOT_SET = ::Object.new.freeze
 
@@ -37,7 +40,7 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
   ##
   # Force the evaluation of this promise immediately
   #
-  # @return [Any]
+  # @return [Object]
   def __force__
     @mutex.synchronize do
       if @result.equal?(NOT_SET) && @error.equal?(NOT_SET)
@@ -57,7 +60,7 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
   # Does this promise support the given method?
   #
   # @param  [Symbol]
-  # @return [true, false]
+  # @return [Boolean]
   def respond_to?(method)
     :force.equal?(method) || :__force__.equal?(method) || __force__.respond_to?(method)
   end
@@ -76,11 +79,11 @@ module Kernel
   # @example Lazily evaluate an arithmetic operation
   #   x = promise { 3 + 3 }
   #
-  # @return      [Promise]
   # @yield       []
   #   A block to be lazily evaluated.
-  # @yieldreturn [Any]
+  # @yieldreturn [Object]
   #   The return value of the block will be the lazily evaluated value of the promise.
+  # @return      [Promise]
   def promise(&block)
     Promise.new(&block)
   end

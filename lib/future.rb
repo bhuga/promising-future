@@ -1,11 +1,12 @@
 require 'promise'
 
 ##
-# A delayed-execution result, optimistcally evaluated in a new Thread.
+# A delayed-execution result, optimistically evaluated in a new thread.
+#
 # @example
-#     x = future { sleep 5; 1 + 2 }
-#     # do stuff...
-#     y = x * 2     # => 6.  blocks unless 5 seconds has passed.
+#   x = future { sleep 5; 1 + 2 }
+#   # do stuff...
+#   y = x * 2     # => 6.  blocks unless 5 seconds has passed.
 #
 class Future < defined?(BasicObject) ? BasicObject : Object
   instance_methods.each { |m| undef_method m unless m =~ /__/ } unless defined?(BasicObject)
@@ -23,7 +24,7 @@ class Future < defined?(BasicObject) ? BasicObject : Object
   ##
   # The value of the future's evaluation.  Blocks until result available.
   #
-  # @return [Any]
+  # @return [Object]
   def __force__
     @thread.join if @thread
     @promise
@@ -31,10 +32,10 @@ class Future < defined?(BasicObject) ? BasicObject : Object
   alias_method :force, :__force__
 
   ##
-  # Does this promise support the given method?
+  # Does this future support the given method?
   #
   # @param  [Symbol]
-  # @return [true, false]
+  # @return [Boolean]
   def respond_to?(method)
     :force.equal?(method) || :__force__.equal?(method) || __force__.respond_to?(method)
   end
@@ -53,11 +54,11 @@ module Kernel
   # @example Evaluate an operation in another thread
   #   x = future { 3 + 3 }
   #
-  # @return      [Future]
   # @yield       []
   #   A block to be optimistically evaluated in another thread.
-  # @yieldreturn [Any]
+  # @yieldreturn [Object]
   #   The return value of the block will be the evaluated value of the future.
+  # @return      [Future]
   def future(&block)
     Future.new(&block)
   end
