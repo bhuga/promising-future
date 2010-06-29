@@ -1,4 +1,4 @@
---title "Promises and Futures for Ruby"
+--title "Lazy and optimistic evaluation for Ruby"
 --output-dir doc/yard
 --protected
 --no-private
