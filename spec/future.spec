@@ -17,6 +17,11 @@ describe Future do
     end
   end
 
+  it "should be a Future" do
+    x = Future.new { y = y + 1 }
+    x.is_a?(::Future).should be_true
+  end
+
   it_should_behave_like "A Promise"
 
   it "should work in the background" do

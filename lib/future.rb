@@ -8,8 +8,7 @@ require 'promise'
 #   # do stuff...
 #   y = x * 2     # => 6.  blocks unless 5 seconds has passed.
 #
-class Future < defined?(BasicObject) ? BasicObject : Object
-  instance_methods.each { |m| undef_method m unless m =~ /__/ } unless defined?(BasicObject)
+class Future < Promise
 
   ##
   # Creates a new future.
@@ -17,8 +16,9 @@ class Future < defined?(BasicObject) ? BasicObject : Object
   # @yield  [] The block to evaluate optimistically.
   # @see    Kernel#future
   def initialize(&block)
-    @promise = ::Promise.new(&block)
-    @thread  = ::Thread.new { @promise.__force__ }
+    super
+    @thread = NOT_SET
+    @thread  = ::Thread.new { __force__ }
   end
 
   ##
@@ -26,25 +26,24 @@ class Future < defined?(BasicObject) ? BasicObject : Object
   #
   # @return [Object]
   def __force__
-    @thread.join if @thread
-    @promise
+    @thread.join unless (@thread == ::Thread.current) || @thread.equal?(NOT_SET)
+    super
   end
   alias_method :force, :__force__
 
+  
   ##
-  # Does this future support the given method?
+  # Returns true if klass.equal?(Future), if klass.equal?(Promise), or the
+  # underlying block returns an instance of the given klass
   #
-  # @param  [Symbol]
-  # @return [Boolean]
-  def respond_to?(method)
-    :force.equal?(method) || :__force__.equal?(method) || __force__.respond_to?(method)
+  # @param [Class]
+  # @return [true, false]
+  def is_a?(klass)
+    klass.equal?(::Future) || super
   end
 
   private
 
-  def method_missing(method, *args, &block)
-    __force__.__send__(method, *args, &block)
-  end
 end
 
 module Kernel

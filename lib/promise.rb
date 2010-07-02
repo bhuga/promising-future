@@ -60,9 +60,27 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
   # Does this promise support the given method?
   #
   # @param  [Symbol]
-  # @return [Boolean]
+  # @return [true, false]
   def respond_to?(method)
-    :force.equal?(method) || :__force__.equal?(method) || __force__.respond_to?(method)
+    :__forced?.equal?(method) || :force.equal?(method) || :__force__.equal?(method) || __force__.respond_to?(method)
+  end
+
+  ##
+  # Returns true if klass.equal?(Promise) or the underlying block returns an
+  # instance of the given klass
+  #
+  # @param [Class]
+  # @return [true, false]
+  def is_a?(klass)
+    klass.equal?(::Promise) || __force__.is_a?(klass)
+  end
+
+  ##
+  # Returns true if this promise has finished executing
+  #
+  # @return [true, false]
+  def __forced?
+    !(@result.equal?(NOT_SET) && @error.equal?(NOT_SET))
   end
 
   private

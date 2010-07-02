@@ -16,14 +16,25 @@ describe Promise do
     end
   end
 
+  it "should not be forced on creation" do
+    x = @method.call { 3 + 5 }
+    x.__forced?.should be_false
+  end
+
+  it "should be a Promise without executing the block" do
+    y = 1
+    x = @method.call { y = y + 1 }
+    x.is_a?(::Promise).should be_true
+    y.should == 1
+  end
+
   it_should_behave_like "A Promise"
 
   it "should delay execution" do
     value = 5
-    x = @method.call { value = 10 ; value }
+    x = @method.call { value = value + 5}
     value.should == 5
-    y = x + 5
-    y.should == 15
+    x.__force__
     value.should == 10
   end
 

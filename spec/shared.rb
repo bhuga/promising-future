@@ -27,6 +27,27 @@ shared_examples_for "A Promise" do
     x.respond_to?(:__force__).should be_true
   end
 
+  it "should respond_to? __forced?" do
+    x = @method.call { 3 + 5 }
+    x.respond_to?(:__forced?).should be_true
+  end
+
+  it "should be forced after execution" do
+    x = @method.call { 3 + 5 }
+    y = x.__force__
+    x.__forced?.should be_true
+  end
+
+  it "should be a Promise" do
+    x = @method.call { y = y + 1 }
+    x.is_a?(::Promise).should be_true
+  end
+
+  it "should be a result class" do
+    x = @method.call { 3 + 5 }
+    x.is_a?(Fixnum).should be_true
+  end
+
   it "should respond_to? a method on the result" do
     x = @method.call { 3 + 5 }
     x.respond_to?(:+).should be_true
@@ -57,17 +78,16 @@ shared_examples_for "A Promise" do
   end
 
   it "should raise exceptions raised during execution when accessed" do
-    y = Object.new
     y = @method.call { 1 / 0 }
-    lambda { y.inspect }.should raise_error ZeroDivisionError
-    lambda { y.inspect }.should raise_error ZeroDivisionError
+    lambda { y.__force__}.should raise_error ZeroDivisionError
+    lambda { y.__force__}.should raise_error ZeroDivisionError
   end
 
   it "should only execute once when execptions are raised" do
     y = 1
     x = @method.call { (y += 1) && (1 / 0) }
-    lambda { x.inspect }.should raise_error ZeroDivisionError
-    lambda { x.inspect }.should raise_error ZeroDivisionError
+    lambda { x.__force__}.should raise_error ZeroDivisionError
+    lambda { x.__force__}.should raise_error ZeroDivisionError
     y.should == 2
   end
 
