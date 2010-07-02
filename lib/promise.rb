@@ -43,14 +43,14 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
   # @return [Object]
   def __force__
     @mutex.synchronize do
-      if @result.equal?(NOT_SET) && @error.equal?(NOT_SET)
+      if !__forced?
         begin
           @result = @block.call
         rescue ::Exception => e
           @error = e
         end
       end
-    end if @result.equal?(NOT_SET) && @error.equal?(NOT_SET)
+    end unless __forced?
     # BasicObject won't send raise to Kernel
     @error.equal?(NOT_SET) ? @result : ::Kernel.raise(@error)
   end
