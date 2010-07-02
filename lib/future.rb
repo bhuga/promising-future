@@ -17,6 +17,11 @@ class Future < Promise
   # @see    Kernel#future
   def initialize(&block)
     super
+    # Ruby won't assign the value of @thread until after the thread is off and
+    # running, meaning we can run into an unset @thread when joining off in
+    # __force__, instead of it being Thread.current.  We could leave it as nil
+    # and check for that, but this is a more explicit way to watch for this
+    # easy-to-miss gotcha.
     @thread = NOT_SET
     @thread  = ::Thread.new { __force__ }
   end
