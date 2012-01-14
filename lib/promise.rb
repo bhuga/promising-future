@@ -1,3 +1,4 @@
+require 'thread' unless defined? Mutex
 ##
 # A delayed-execution promise.  Promises are only executed once.
 #
