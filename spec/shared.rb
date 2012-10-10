@@ -1,4 +1,4 @@
-require 'spec'
+require 'rspec'
 require 'promise'
 
 shared_examples_for "A Promise" do
