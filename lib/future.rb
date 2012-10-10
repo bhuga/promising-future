@@ -9,7 +9,7 @@ require 'promise'
 #   y = x * 2     # => 6.  blocks unless 5 seconds has passed.
 #
 class Future < defined?(BasicObject) ? BasicObject : Object
-  instance_methods.each { |m| undef_method m unless m =~ /__/ } unless defined?(BasicObject)
+  instance_methods.each { |m| undef_method m unless m =~ /^(__.*|object_id)$/ }
 
   ##
   # Creates a new future.

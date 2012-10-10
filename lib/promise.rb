@@ -17,7 +17,7 @@
 class Promise < defined?(BasicObject) ? BasicObject : ::Object
   NOT_SET = ::Object.new.freeze
 
-  instance_methods.each { |m| undef_method m unless m.to_s =~ /__/ }
+  instance_methods.each { |m| undef_method m unless m =~ /^(__.*|object_id)$/ }
 
   ##
   # Creates a new promise.
@@ -29,7 +29,7 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
   # @see    Kernel#promise
   def initialize(&block)
     if block.arity > 0
-      raise ArgumentError, "Cannot store a promise that requires an argument"
+      ::Kernel.raise ::ArgumentError, "Cannot store a promise that requires an argument"
     end
     @block  = block
     @mutex  = ::Mutex.new
