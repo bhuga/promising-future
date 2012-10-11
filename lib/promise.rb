@@ -14,6 +14,14 @@
 #   x + 5     # => 15
 #   x + 5     # => 15
 #
+# You can pass arguments to be converted to local variables in the block.
+#
+# @example
+#   hello = 'hello'
+#   x = promise(hello) { |h| h.capitalize! }
+#   puts hello.to_s   # prints 'hello'
+#   puts x.to_s       # prints 'Hello'
+#
 class Promise < defined?(BasicObject) ? BasicObject : ::Object
   NOT_SET = ::Object.new.freeze
 
@@ -25,12 +33,11 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
   # @example Lazily evaluate a database call
   #   result = promise { @db.query("SELECT * FROM TABLE") }
   #
+  # @param  argument_list these will be converted to local variables in the block.
   # @yield  [] The block to evaluate lazily.
   # @see    Kernel#promise
-  def initialize(&block)
-    if block.arity > 0
-      ::Kernel.raise ::ArgumentError, "Cannot store a promise that requires an argument"
-    end
+  def initialize(*args,&block)
+    @args = args.collect{|a|a.respond_to?(:dup) ? a.dup : a}
     @block  = block
     @mutex  = ::Mutex.new
     @result = NOT_SET
@@ -45,7 +52,7 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
     @mutex.synchronize do
       if @result.equal?(NOT_SET) && @error.equal?(NOT_SET)
         begin
-          @result = @block.call
+          @result = @block.call(*@args)
         rescue ::Exception => e
           @error = e
         end
@@ -79,12 +86,13 @@ module Kernel
   # @example Lazily evaluate an arithmetic operation
   #   x = promise { 3 + 3 }
   #
+  # @param  [obj,...] Arguments to be converted to local variables in the block.
   # @yield       []
   #   A block to be lazily evaluated.
   # @yieldreturn [Object]
   #   The return value of the block will be the lazily evaluated value of the promise.
   # @return      [Promise]
-  def promise(&block)
-    Promise.new(&block)
+  def promise(*args,&block)
+    Promise.new(*args,&block)
   end
 end
