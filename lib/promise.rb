@@ -37,7 +37,7 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
   # @yield  [] The block to evaluate lazily.
   # @see    Kernel#promise
   def initialize(*args,&block)
-    @args = args.collect{|a|a.respond_to?(:dup) ? a.dup : a}
+    @args = args.collect {|a|begin; a.dup; rescue; a; end}
     @block  = block
     @mutex  = ::Mutex.new
     @result = NOT_SET
