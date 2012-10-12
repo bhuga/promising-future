@@ -1,3 +1,5 @@
+require 'thread'
+
 ##
 # A delayed-execution promise.  Promises are only executed once.
 #
@@ -37,7 +39,10 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
   # @yield  [] The block to evaluate lazily.
   # @see    Kernel#promise
   def initialize(*args,&block)
-    @args = args.collect{|a|a.respond_to?(:dup) ? a.dup : a}
+    ::Kernel.raise ::ArgumentError, "Promise.new requires a block " if block.nil?
+
+    @args = args.collect {|a|begin; a.dup; rescue; a; end}
+    raise if block.nil?
     @block  = block
     @mutex  = ::Mutex.new
     @result = NOT_SET
@@ -79,7 +84,7 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
   end
 end
 
-module Kernel
+module Promising
   ##
   # Creates a new promise.
   #
@@ -95,4 +100,61 @@ module Kernel
   def promise(*args,&block)
     Promise.new(*args,&block)
   end
+
+  ##
+  # Creates a new future.
+  #
+  # @example Evaluate an operation in another thread
+  #   x = future { 3 + 3 }
+  #
+  # @param  [obj,...] Arguments to be converted to local variables in the block.
+  # @yield       []
+  #   A block to be optimistically evaluated in another thread.
+  # @yield return [Object]
+  #   The return value of the block will be the evaluated value of the future.
+  # @return      [Promise]
+  # @see    Thread#new
+  def future(*args, &block)
+    t = Thread.start(*args, &block)
+    Promise.new{t.value}
+  end
+
+  ##
+  # Creates a new promise with a worker to be added to a thread pool.
+  # The returned worker is a Proc which, when executed, claims the right to process the
+  # promised block and begins executing. It can be activated with Proc#call <no arguments>
+  #
+  # You can add the worker to a thread pool work queue if you want
+  # processing to begin immediately (which makes the returned promise behave as a future).
+  #
+  # For the returned promise, calling Promise#__force__ can yield 3 behaviors:
+  #
+  # 1. If the worker proc hasn't yet claimed processing, the current thread
+  #    will claim it (calling the worker proc at this point will return immediately) and
+  #    process it, returning the value.
+  # 2. If the worker proc has claimed processing (most likely by being called in another
+  #    thread), the curent thread sleeps until the worker proc is done and then returns
+  #    the result.
+  # 3. If promised block has already finished executing in any thread, the current
+  #    thread doesn't need to wait and the result is immediately returned.
+  #
+  # @example Evaluate an operation in another thread
+  #   p, w = promise_with_worker { 3 + 3 }
+  #   pool.queue << w      # add the worker to a queue so processing will immediately start
+  #   ... later ...
+  #   p.__force__          # returns the result with one of the three behaviors listed
+  #
+  # @param  argument_list these will be converted to local variables in the block.
+  # @yield  [] The block to evaluate lazily.
+  #   A block to be evaluated in the promise.
+  # @return      [Promise, Proc]
+  def promise_with_worker(*args,&block)
+    p = Promise.new(*args,&block)
+    lock = false
+    mutex = Mutex.new
+
+    l = lambda { p.__force__ if mutex.synchronize { !lock ? lock = true : false } }
+    return Promise.new{ l.call; p.__force__ }, l
+  end
+
 end
