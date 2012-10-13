@@ -95,4 +95,22 @@ module Kernel
   def promise(*args,&block)
     Promise.new(*args,&block)
   end
+
+  ##
+  # Creates a new future.
+  #
+  # @example Evaluate an operation in another thread
+  #   x = future { 3 + 3 }
+  #
+  # @param  [obj,...] Arguments to be converted to local variables in the block.
+  # @yield       []
+  #   A block to be optimistically evaluated in another thread.
+  # @yieldreturn [Object]
+  #   The return value of the block will be the evaluated value of the future.
+  # @return      [Future]
+  # @see    Thread#new
+  def future(*args, &block)
+    t = Thread.start(*args,&block)
+    Promise.new { t.value }
+  end
 end
