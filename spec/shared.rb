@@ -1,14 +1,37 @@
 require 'rspec'
 require 'promise'
 
+include Promising
+
 shared_examples_for "A Promise" do
 
   it "should be createable" do
     lambda {x = @method.call { 3 + 5 }}.should_not raise_error
   end
 
-  it "should not accept a block requiring arguments" do
-    lambda {x = @method.call { | x | 3 + 5 }}.should raise_error
+  it "should raise an ArgumentError if a block is unspecified" do
+    lambda {@method.call}.should raise_error(::ArgumentError)
+  end
+
+  it "should capture values passed in the args" do
+    hello = 'hello'
+    x = @method.call(hello) { |h| h.capitalize! }
+    hello.should == 'hello'
+    x.should == 'hello'.capitalize
+  end
+
+  it "should capture non duplicatable values passed in the args" do
+    y = 5
+    x = @method.call(y) { |h| h += 5 }
+    y.should == 5
+    x.should == 10
+  end
+
+  it "should share values not passed in the args" do
+    hello = 'hello'
+    x = @method.call { hello.capitalize! }
+    x.should == 'hello'.capitalize
+    hello.should == 'hello'.capitalize
   end
 
   it "should be forceable" do
