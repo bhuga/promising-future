@@ -56,6 +56,7 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
         rescue ::Exception => e
           @error = e
         end
+        @args = @block = nil # dereferenced for GC
       end
     end if @result.equal?(NOT_SET) && @error.equal?(NOT_SET)
     # BasicObject won't send raise to Kernel
