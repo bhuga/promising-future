@@ -7,8 +7,18 @@ shared_examples_for "A Promise" do
     lambda {x = @method.call { 3 + 5 }}.should_not raise_error
   end
 
-  it "should not accept a block requiring arguments" do
-    lambda {x = @method.call { | x | 3 + 5 }}.should raise_error
+  it "should capture values passed in the args" do
+    hello = 'hello'
+    x = @method.call(hello) { |h| h.capitalize! }
+    hello.should == 'hello'
+    x.should == 'hello'.capitalize
+  end
+
+  it "should share values not passed in the args" do
+    hello = 'hello'
+    x = @method.call { hello.capitalize! }
+    x.should == 'hello'.capitalize
+    hello.should == 'hello'.capitalize
   end
 
   it "should be forceable" do

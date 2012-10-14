@@ -1,5 +1,3 @@
-require 'promise'
-
 ##
 # A delayed-execution result, optimistically evaluated in a new thread.
 #
@@ -8,17 +6,25 @@ require 'promise'
 #   # do stuff...
 #   y = x * 2     # => 6.  blocks unless 5 seconds has passed.
 #
+# You can pass arguments to be converted to local variables in the block.
+#
+# @example
+#   hello = 'hello'
+#   x = future(hello) { |h| h.capitalize! }
+#   puts hello.to_s   # prints 'hello'
+#   puts x.to_s       # prints 'Hello'
+#
 class Future < defined?(BasicObject) ? BasicObject : Object
   instance_methods.each { |m| undef_method m unless m =~ /^(__.*|object_id)$/ }
 
   ##
   # Creates a new future.
   #
+  # @param  argument_list these will be converted to local variables in the block.
   # @yield  [] The block to evaluate optimistically.
   # @see    Kernel#future
-  def initialize(&block)
-    @promise = ::Promise.new(&block)
-    @thread  = ::Thread.new { @promise.__force__ }
+  def initialize(*args, &block)
+    @thread  = ::Thread.new(*args,&block)
   end
 
   ##
@@ -26,8 +32,11 @@ class Future < defined?(BasicObject) ? BasicObject : Object
   #
   # @return [Object]
   def __force__
-    @thread.join if @thread
-    @promise
+    unless @thread.nil?
+      @value = @thread.value
+      @thread = nil
+    end
+    @value
   end
   alias_method :force, :__force__
 
@@ -44,22 +53,5 @@ class Future < defined?(BasicObject) ? BasicObject : Object
 
   def method_missing(method, *args, &block)
     __force__.__send__(method, *args, &block)
-  end
-end
-
-module Kernel
-  ##
-  # Creates a new future.
-  #
-  # @example Evaluate an operation in another thread
-  #   x = future { 3 + 3 }
-  #
-  # @yield       []
-  #   A block to be optimistically evaluated in another thread.
-  # @yieldreturn [Object]
-  #   The return value of the block will be the evaluated value of the future.
-  # @return      [Future]
-  def future(&block)
-    Future.new(&block)
   end
 end

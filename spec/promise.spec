@@ -32,4 +32,43 @@ describe Promise do
     lambda {x = [ 1, @method.call { x / 0 }]}.should_not raise_error
   end
 
+  it "promise_with_worker should return a Proc with arity 0" do
+    x = promise{}
+    x.__worker__.class.should == Proc
+    x.__worker__.arity.should == 0
+  end
+
+  it "promise_with_worker should work if the worker is ignored" do
+    hello = 'hello'
+    x = promise(hello) {|h| h.capitalize! }
+    x.should == 'hello'.capitalize
+    hello.should == 'hello'
+  end
+
+  it "promise_with_worker should share the load between the thread and a thread pool" do
+    mutex = Mutex.new
+    executing_t = nil;
+    
+    thread_test = lambda{ mutex.synchronize{executing_t = Thread.current} }
+
+    x = promise &thread_test
+    t = Thread.start{x.__worker__.call}
+    t.join
+    executing_t.should == t
+
+    x = promise &thread_test
+    t = Thread.start{x.__force__}
+    t.join
+    executing_t.should == t
+
+    x = promise &thread_test
+    x.__worker__.call
+    executing_t.should == Thread.current
+    
+    x = promise &thread_test
+    x.__force__
+    executing_t.should == Thread.current
+
+  end
+
 end

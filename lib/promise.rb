@@ -14,6 +14,14 @@
 #   x + 5     # => 15
 #   x + 5     # => 15
 #
+# You can pass arguments to be converted to local variables in the block.
+#
+# @example
+#   hello = 'hello'
+#   x = promise(hello) { |h| h.capitalize! }
+#   puts hello.to_s   # prints 'hello'
+#   puts x.to_s       # prints 'Hello'
+#
 class Promise < defined?(BasicObject) ? BasicObject : ::Object
   NOT_SET = ::Object.new.freeze
 
@@ -25,16 +33,41 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
   # @example Lazily evaluate a database call
   #   result = promise { @db.query("SELECT * FROM TABLE") }
   #
+  # @param  argument_list these will be converted to local variables in the block.
   # @yield  [] The block to evaluate lazily.
   # @see    Kernel#promise
-  def initialize(&block)
-    if block.arity > 0
-      ::Kernel.raise ::ArgumentError, "Cannot store a promise that requires an argument"
-    end
-    @block  = block
+  def initialize(*args,&block)
+    @args   = args.collect {|a|begin; a.dup; rescue; a; end}
     @mutex  = ::Mutex.new
+    @block  = block
     @result = NOT_SET
     @error  = NOT_SET
+  end
+
+  ##
+  # Creates a worker to be added to a thread pool.
+  # The returned worker is a Proc which, when executed, claims the right to process the
+  # promised block and begins executing. It can be activated with Proc#call
+  #
+  # You can add the worker to a thread pool work queue if you want the promise
+  # to begin executing in the pool.
+  #
+  # Promise#__force__ will still wait until the promised block has finished executing, whether
+  # by the thread pool or the current thread.
+  #
+  # @example Evaluate an operation in another thread
+  #   p = promise { 3 + 3 }
+  #   pool.queue << p.__worker__ # add the worker to a queue so processing will immediately start
+  #   ... later ...
+  #   p.__force__
+  #
+  # @return      [Proc]
+  def __worker__
+    lambda do
+       next if !@mutex.try_lock
+       __call_block__
+       @mutex.unlock
+    end
   end
 
   ##
@@ -43,13 +76,7 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
   # @return [Object]
   def __force__
     @mutex.synchronize do
-      if @result.equal?(NOT_SET) && @error.equal?(NOT_SET)
-        begin
-          @result = @block.call
-        rescue ::Exception => e
-          @error = e
-        end
-      end
+      __call_block__
     end if @result.equal?(NOT_SET) && @error.equal?(NOT_SET)
     # BasicObject won't send raise to Kernel
     @error.equal?(NOT_SET) ? @result : ::Kernel.raise(@error)
@@ -70,6 +97,16 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
   def method_missing(method, *args, &block)
     __force__.__send__(method, *args, &block)
   end
+  
+  def __call_block__
+    return unless @result.equal?(NOT_SET) && @error.equal?(NOT_SET)
+    begin
+      @result = @block.call(*@args)
+    rescue ::Exception => e
+      @error = e
+    end
+    @block = @args = nil # remove references for GC
+  end
 end
 
 module Kernel
@@ -79,12 +116,31 @@ module Kernel
   # @example Lazily evaluate an arithmetic operation
   #   x = promise { 3 + 3 }
   #
+  # @param  [obj,...] Arguments to be converted to local variables in the block.
   # @yield       []
   #   A block to be lazily evaluated.
   # @yieldreturn [Object]
   #   The return value of the block will be the lazily evaluated value of the promise.
   # @return      [Promise]
-  def promise(&block)
-    Promise.new(&block)
+  def promise(*args,&block)
+    Promise.new(*args,&block)
+  end
+
+  ##
+  # Creates a new future.
+  #
+  # @example Evaluate an operation in another thread
+  #   x = future { 3 + 3 }
+  #
+  # @param  [obj,...] Arguments to be converted to local variables in the block.
+  # @yield       []
+  #   A block to be optimistically evaluated in another thread.
+  # @yieldreturn [Object]
+  #   The return value of the block will be the evaluated value of the future.
+  # @return      [Future]
+  # @see    Thread#new
+  def future(*args, &block)
+    t = Thread.start(*args,&block)
+    Promise.new { t.value }
   end
 end
