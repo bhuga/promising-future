@@ -62,7 +62,32 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
   # @param  [Symbol, Boolean]
   # @return [Boolean]
   def respond_to?(method, include_all=false)
-    :force.equal?(method) || :__force__.equal?(method) || __force__.respond_to?(method, include_all)
+    # If the promised object implements marshal_dump, Marshal will use it in
+    # preference to our _dump, so make sure that doesn't happen.
+    return false if :marshal_dump.equal?(method)
+
+    :_dump.equal?(method) ||  # for Marshal
+      :force.equal?(method) ||
+      :__force__.equal?(method) ||
+      __force__.respond_to?(method, include_all)
+  end
+
+  ##
+  # Method used by Marshal to serialize the object.  Forces evaluation.
+  #
+  # @param  [Integer] limit -- refer to Marshal doc
+  # @return [Object]
+  def _dump(limit)
+    ::Marshal.dump(__force__, limit)
+  end
+
+  ##
+  # Method used by Marshal to deserialize the object.
+  #
+  # @param  [Object]
+  # @return [Promise]
+  def self._load(obj)
+    ::Marshal.load(obj)
   end
 
   private
