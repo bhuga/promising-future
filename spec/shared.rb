@@ -4,84 +4,84 @@ require 'promise'
 shared_examples_for "A Promise" do
 
   it "should be createable" do
-    lambda {x = @method.call { 3 + 5 }}.should_not raise_error
+    expect {x = @method.call { 3 + 5 }}.to_not raise_error
   end
 
   it "should not accept a block requiring arguments" do
-    lambda {x = @method.call { | x | 3 + 5 }}.should raise_error
+    expect {x = @method.call { | x | 3 + 5 }}.to raise_error
   end
 
   it "should be forceable" do
     x = @method.call { 3 + 5 }
-    x.__force__.should == 8
-    x.should == 8
+    expect(x.__force__).to eq 8
+    expect(x).to eq 8
   end
 
   it "should respond_to? force" do
     x = @method.call { 3 + 5 }
-    x.respond_to?(:force).should be_true
+    expect(x).to respond_to(:force)
   end
 
   it "should respond_to? __force__" do
     x = @method.call { 3 + 5 }
-    x.respond_to?(:__force__).should be_true
+    expect(x).to respond_to(:__force__)
   end
 
   it "should respond_to? a method on the result" do
     x = @method.call { 3 + 5 }
-    x.respond_to?(:+).should be_true
+    expect(x).to respond_to(:+)
   end
 
   it "should not respond_to? a method not on the result" do
     x = @method.call { 3 + 5 }
-    x.respond_to?(:asdf).should be_false
+    expect(x).to_not respond_to(:asdf)
   end
 
   it "should evaluate to a value" do
-    (5 + @method.call { 1 + 2 }).should == 8
+    expect(5 + @method.call { 1 + 2 }).to eq 8
   end
 
   it "should hold its value" do
     y = 5
     x = @method.call { y = y + 5 }
-    x.should == 10
-    x.should == 10
+    expect(x).to eq 10
+    expect(x).to eq 10
   end
 
   it "should only execute once" do
     y = 1
     x = @method.call { (y += 1) && false }
-    x.should == false
-    x.should == false
-    y.should == 2
+    expect(x).to eq false
+    expect(x).to eq false
+    expect(y).to eq 2
   end
 
   it "should raise exceptions raised during execution when accessed" do
     y = Object.new
     y = @method.call { 1 / 0 }
-    lambda { y.inspect }.should raise_error ZeroDivisionError
-    lambda { y.inspect }.should raise_error ZeroDivisionError
+    expect { y.inspect }.to raise_error ZeroDivisionError
+    expect { y.inspect }.to raise_error ZeroDivisionError
   end
 
   it "should only execute once when execptions are raised" do
     y = 1
     x = @method.call { (y += 1) && (1 / 0) }
-    lambda { x.inspect }.should raise_error ZeroDivisionError
-    lambda { x.inspect }.should raise_error ZeroDivisionError
-    y.should == 2
+    expect { x.inspect }.to raise_error ZeroDivisionError
+    expect { x.inspect }.to raise_error ZeroDivisionError
+    expect(y).to eq 2
   end
 
   it "should remain the same for an object reference" do
     h = {}
     x = Object.new
     h[:test] = @method.call { x }
-    h[:test].should == x
+    expect(h[:test]).to eq x
   end
 
   it "should be eql? for results" do
     x = Object.new
     y = @method.call { x }
-    y.should eql x
+    expect(y).to eq x
     # this would be ideal, but it can't be done in Ruby.  result
     # objects that have a redefined #eql? should do fine.  
     #x.should eql y
@@ -90,7 +90,7 @@ shared_examples_for "A Promise" do
   it "should be equal? for results" do
     x = Object.new
     y = @method.call { x }
-    y.should equal x
+    expect(y).to eq x
     # this would be ideal, but it can't be done in Ruby.
     #x.should equal y
   end
@@ -118,12 +118,12 @@ shared_examples_for "A Promise" do
       t.join
     end
     results.each do |result|
-      result.should == 130
+      expect(result).to eq 130
     end
     changeds.each do |changed|
-      changed.should == false
+      expect(changed).to eq false
     end
-    changeds.size.should == 10
+    expect(changeds.size).to eq 10
   end
 
 end

@@ -13,7 +13,7 @@ describe Future do
 
   if defined?(BasicObject)
     it "should inherit from BasicObject if available, and not otherwise" do
-      Future.ancestors.should include BasicObject
+      expect(Future.ancestors).to include BasicObject
     end
   end
 
@@ -24,10 +24,10 @@ describe Future do
     x = future { sleep 3; 5 }
     middle = Time.now
     y = x + 5
-    y.should == 10
+    expect(y).to eq 10
     finish = Time.now
-    (middle - start).should be_within(10**-2).of(0)
-    (finish - start).should be_within(10**-2).of(3)
+    expect(middle - start).to be_within(10**-2).of(0)
+    expect(finish - start).to be_within(10**-2).of(3)
   end
 
 end
