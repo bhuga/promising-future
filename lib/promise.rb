@@ -59,10 +59,10 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
   ##
   # Does this promise support the given method?
   #
-  # @param  [Symbol]
+  # @param  [Symbol, Boolean]
   # @return [Boolean]
-  def respond_to?(method)
-    :force.equal?(method) || :__force__.equal?(method) || __force__.respond_to?(method)
+  def respond_to?(method, include_all=false)
+    :force.equal?(method) || :__force__.equal?(method) || __force__.respond_to?(method, include_all)
   end
 
   private
