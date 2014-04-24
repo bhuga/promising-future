@@ -32,4 +32,30 @@ describe Promise do
     expect {x = [ 1, @method.call { x / 0 }]}.to_not raise_error
   end
 
+  describe 'an object referencing a promise' do
+    class ClassResulting
+      attr_reader :value
+      def initialize(value)
+        @value = value
+      end
+      def marshal_dump
+        [@value]
+      end
+      def marshal_load(custom_struct)
+        @value = custom_struct[0]
+      end
+    end
+
+    class ClassReferencingAPromise
+      attr_reader :long_computation
+      def initialize
+        @long_computation = promise { ClassResulting.new(8) }
+      end
+    end
+    
+    it 'can be marshaled and unmarshalled' do
+      clazz_ = Marshal.load(Marshal.dump(ClassReferencingAPromise.new))
+      expect(clazz_.long_computation.value).to eq 8
+    end
+  end
 end
