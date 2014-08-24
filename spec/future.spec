@@ -31,8 +31,13 @@ describe Future do
   end
 
   it "should finished when timeout" do
+    # timeout
     x = future(timeout:1){ sleep 2; 5 }
-    expect{y = x + 5}.to raise_error(::Timeout::Error)
+    expect{x + 5}.to raise_error(::Timeout::Error)
+
+    # not timeout
+    x = future(timeout:2){ sleep 1; 5 }
+    expect(x + 5).to eq 10
   end
 end
 
