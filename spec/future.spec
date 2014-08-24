@@ -30,5 +30,9 @@ describe Future do
     expect(finish - start).to be_within(10**-2).of(3)
   end
 
+  it "should finished when timeout" do
+    x = future(timeout:1){ sleep 2; 5 }
+    expect{y = x + 5}.to raise_error(::Timeout::Error)
+  end
 end
 
