@@ -14,6 +14,8 @@
 #   x + 5     # => 15
 #   x + 5     # => 15
 #
+require 'timeout'
+
 class Promise < defined?(BasicObject) ? BasicObject : ::Object
   NOT_SET = ::Object.new.freeze
 
@@ -27,14 +29,15 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
   #
   # @yield  [] The block to evaluate lazily.
   # @see    Kernel#promise
-  def initialize(&block)
+  def initialize(timeout:nil,&block)
     if block.arity > 0
       ::Kernel.raise ::ArgumentError, "Cannot store a promise that requires an argument"
     end
-    @block  = block
-    @mutex  = ::Mutex.new
-    @result = NOT_SET
-    @error  = NOT_SET
+    @timeout = timeout
+    @block   = block
+    @mutex   = ::Mutex.new
+    @result  = NOT_SET
+    @error   = NOT_SET
   end
 
   ##
@@ -45,7 +48,13 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
     @mutex.synchronize do
       if @result.equal?(NOT_SET) && @error.equal?(NOT_SET)
         begin
-          @result = @block.call
+          if @timeout
+            ::Timeout.timeout(@timeout) do
+              @result = @block.call
+            end
+          else
+            @result = @block.call
+          end
         rescue ::Exception => e
           @error = e
         end
@@ -109,7 +118,7 @@ module Kernel
   # @yieldreturn [Object]
   #   The return value of the block will be the lazily evaluated value of the promise.
   # @return      [Promise]
-  def promise(&block)
-    Promise.new(&block)
+  def promise(timeout:nil,&block)
+    Promise.new(timeout:timeout,&block)
   end
 end

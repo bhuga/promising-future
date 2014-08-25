@@ -1,5 +1,4 @@
 require 'promise'
-require 'timeout'
 
 ##
 # A delayed-execution result, optimistically evaluated in a new thread.
@@ -18,16 +17,8 @@ class Future < defined?(BasicObject) ? BasicObject : Object
   # @yield  [] The block to evaluate optimistically.
   # @see    Kernel#future
   def initialize(timeout:nil,&block)
-    @promise = ::Promise.new(&block)
-    @thread  = ::Thread.new do
-      if timeout
-        ::Timeout.timeout(timeout) do
-          @promise.__force__
-        end
-      else
-        @promise.__force__
-      end
-    end
+    @promise = ::Promise.new(timeout:timeout,&block)
+    @thread  = ::Thread.new{@promise.__force__}
   end
 
   ##
