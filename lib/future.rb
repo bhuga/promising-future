@@ -16,9 +16,9 @@ class Future < defined?(BasicObject) ? BasicObject : Object
   #
   # @yield  [] The block to evaluate optimistically.
   # @see    Kernel#future
-  def initialize(&block)
-    @promise = ::Promise.new(&block)
-    @thread  = ::Thread.new { @promise.__force__ }
+  def initialize(timeout:nil,&block)
+    @promise = ::Promise.new(timeout:timeout,&block)
+    @thread  = ::Thread.new{@promise.__force__}
   end
 
   ##
@@ -59,7 +59,7 @@ module Kernel
   # @yieldreturn [Object]
   #   The return value of the block will be the evaluated value of the future.
   # @return      [Future]
-  def future(&block)
-    Future.new(&block)
+  def future(timeout:nil, &block)
+    Future.new(timeout:timeout, &block)
   end
 end
