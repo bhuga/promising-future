@@ -20,7 +20,11 @@ Note that this is pretty useless in Ruby's interactive shell `irb`, as it
 will eagerly evaluate everything as part of its read-eval-print loop,
 forcing promises and futures to yield their results.
 
-The library has been tested with Ruby 1.8.7, 1.9.1 and JRuby 1.5.0.
+The library is automatically tested with Travis CI and aims to support a
+wide range of Ruby interpreters.
+
+[![Build Status](https://travis-ci.org/bhuga/promising-future.svg)](https://travis-ci.org/bhuga/promising-future)
+
 YARD documentation is available at <http://promise.rubyforge.org/>
 
 ## Classes
