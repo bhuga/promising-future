@@ -30,6 +30,6 @@ GEMSPEC = Gem::Specification.new do |gem|
 
   gem.required_ruby_version      = '>= 1.8.2'
   gem.add_development_dependency 'rake'
-  gem.add_development_dependency 'rspec', '~> 2'
+  gem.add_development_dependency 'rspec', '~> 3'
   gem.add_development_dependency 'yard' , '>= 0.5.8'
 end
