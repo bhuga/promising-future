@@ -1,32 +1,7 @@
-require 'rspec'
 require 'rspec/core/rake_task'
 
 desc 'Run specs'
-task 'spec' do
-  RSpec::Core::RakeTask.new("spec") do |t|
-    t.pattern = "spec/**/*.spec"
-    t.rcov = false
-    t.rspec_opts = ["-c"]
-  end
-end
-
-desc 'Run specs with backtrace'
-task 'tracespec' do
-  RSpec::Core::RakeTask.new("tracespec") do |t|
-    t.pattern = "spec/**/*.spec"
-    t.rcov = false
-    t.rspec_opts = ["-bcfn"]
-  end
-end
-
-desc 'Run coverage'
-task 'coverage' do
-  RSpec::Core::RakeTask.new("coverage") do |t|
-    t.pattern = "spec/**/*.spec"
-    t.rcov = true
-    t.rspec_opts = ["-c"]
-  end
-end
+RSpec::Core::RakeTask.new(:spec)
 
 task :default => [:spec]
 
