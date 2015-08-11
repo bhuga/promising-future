@@ -3,7 +3,7 @@ require 'promise'
 
 shared_examples_for "A Promise" do
 
-  it "should raise ArgumentErron when create without block" do
+  it "should raise ArgumentError when create without block" do
     expect { @method.call }.to raise_error(ArgumentError, "Block required")
   end
 
