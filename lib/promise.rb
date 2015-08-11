@@ -28,8 +28,10 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
   # @yield  [] The block to evaluate lazily.
   # @see    Kernel#promise
   def initialize(&block)
+    raise ::ArgumentError, "Block required" unless block
+
     if block.arity > 0
-      ::Kernel.raise ::ArgumentError, "Cannot store a promise that requires an argument"
+      raise ::ArgumentError, "Cannot store a promise that requires an argument"
     end
     @block  = block
     @mutex  = ::Mutex.new
@@ -91,6 +93,10 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
   end
 
   private
+
+  def raise(klass, message = nil)
+    ::Kernel.raise klass, message
+  end
 
   def method_missing(method, *args, &block)
     __force__.__send__(method, *args, &block)
