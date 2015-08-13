@@ -3,6 +3,10 @@ require 'promise'
 
 shared_examples_for "A Promise" do
 
+  it "should raise ArgumentError when create without block" do
+    expect { @method.call }.to raise_error(ArgumentError, "Block required")
+  end
+
   it "should be createable" do
     expect {x = @method.call { 3 + 5 }}.to_not raise_error
   end
