@@ -5,7 +5,7 @@ A glimpse of a promising future in which Ruby supports lazy evaluation.
 [Promises and futures][] both transparently defer the execution of a block.
 Promises evaluate the given block if and when its result is first needed.
 Futures evaluate the given block optimistically in another thread.
-
+````ruby
     require 'promise'
     require 'future'    # you can just require 'future' if using both
 
@@ -15,6 +15,7 @@ Futures evaluate the given block optimistically in another thread.
     puts x      #=> 3
     sleep 5     # ... do work for 5 seconds ...
     puts y      #=> 42, after blocking 5 seconds
+````
 
 Note that this is pretty useless in Ruby's interactive shell `irb`, as it
 will eagerly evaluate everything as part of its read-eval-print loop,
@@ -22,9 +23,11 @@ forcing promises and futures to yield their results.
 
 If you still want to test in `irb` you can try something like this:
 
+````ruby
     x = promise { sleep(5) && 6 * 7 }; nil
     # do some work
     x + 1 # block for 5 seconds
+````
 
 The library is automatically tested with Travis CI and aims to support a
 wide range of Ruby interpreters.
@@ -41,7 +44,9 @@ YARD documentation is available at <http://promise.rubyforge.org/>
 ## Installation
 The library is distributed via [RubyGems](http://rubygems.org/):
 
+````sh
     $ gem install promise
+````
 
 ## Source
 The source is available at <http://github.com/bhuga/promising-future>
