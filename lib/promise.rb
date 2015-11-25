@@ -92,6 +92,11 @@ class Promise < defined?(BasicObject) ? BasicObject : ::Object
     ::Marshal.load(obj)
   end
 
+  # https://github.com/rubinius/rubinius/issues/3527
+  def __class__
+    ::Promise
+  end
+
   private
 
   def raise(klass, message = nil)
