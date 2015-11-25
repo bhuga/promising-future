@@ -33,6 +33,7 @@ The library is automatically tested with Travis CI and aims to support a
 wide range of Ruby interpreters.
 
 [![Build Status](https://travis-ci.org/bhuga/promising-future.svg)](https://travis-ci.org/bhuga/promising-future)
+[![Coverage Status](https://coveralls.io/repos/bhuga/promising-future/badge.svg?branch=master&service=github)](https://coveralls.io/github/bhuga/promising-future?branch=master)
 
 YARD documentation is available at <http://promise.rubyforge.org/>
 
