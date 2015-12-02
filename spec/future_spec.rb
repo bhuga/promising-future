@@ -1,9 +1,10 @@
 $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib')))
 $:.unshift File.dirname(__FILE__)
 
+require 'spec_helper'
+require 'shared_promise'
 require 'future'
 require 'time'
-require 'shared'
 
 describe Future do
 
@@ -31,4 +32,3 @@ describe Future do
   end
 
 end
-

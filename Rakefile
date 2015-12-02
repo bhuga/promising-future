@@ -1,7 +1,10 @@
 require 'rspec/core/rake_task'
 
 desc 'Run specs'
-RSpec::Core::RakeTask.new(:spec)
+RSpec::Core::RakeTask.new(:spec) do |t|
+  # Force load the test_helper to ensure SimpleCov is loaded before the test files
+  t.ruby_opts = ['-r "./spec/spec_helper"']
+end
 
 task :default => [:spec]
 

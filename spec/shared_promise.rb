@@ -1,7 +1,4 @@
-require 'coveralls'
-Coveralls.wear!
-
-require 'rspec'
+require 'spec_helper'
 require 'promise'
 
 shared_examples_for "A Promise" do
