@@ -26,8 +26,8 @@ describe Future do
     y = x + 5
     expect(y).to eq 10
     finish = Time.now
-    expect(middle - start).to be_within(10**-2).of(0)
-    expect(finish - start).to be_within(10**-2).of(3)
+    expect(middle - start).to be < 0.1
+    expect(finish - start).to be_within(0.5).of(3)
   end
 
 end

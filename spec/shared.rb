@@ -104,11 +104,10 @@ shared_examples_for "A Promise" do
 
   it "should be thread safe" do
     x = @method.call { res = 1; 3.times { res = res * 5 ; sleep 1 } ; res}
-    threads = []
-    results = []
-    changeds = []
-    10.times do
-      threads << Thread.new do
+    results = Array.new(10)
+    changeds = Array.new(10){false}
+    threads = Array.new(10) do |i|
+      Thread.new do
         changed = false
         res = old_res = 125
         10.times do |i|
@@ -117,8 +116,8 @@ shared_examples_for "A Promise" do
           changed ||= res != old_res && i != 0
           sleep 0.3
         end
-        results << res
-        changeds << changed
+        results[i] = res
+        changeds[i] = changed
       end
     end
     threads.each do |t|
