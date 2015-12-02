@@ -28,7 +28,7 @@ describe Promise do
   end
 
   it "should delay execution of invalid code" do
-    expect {x = [ 1, x / 0 ]}.to raise_error
+    expect {x = [ 1, x / 0 ]}.to raise_error(NoMethodError)
     expect {x = [ 1, @method.call { x / 0 }]}.to_not raise_error
   end
 

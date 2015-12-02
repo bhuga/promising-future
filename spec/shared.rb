@@ -15,7 +15,7 @@ shared_examples_for "A Promise" do
   end
 
   it "should not accept a block requiring arguments" do
-    expect {x = @method.call { | x | 3 + 5 }}.to raise_error
+    expect {x = @method.call { | x | 3 + 5 }}.to raise_error(ArgumentError, 'Cannot store a promise that requires an argument')
   end
 
   it "should be forceable" do
