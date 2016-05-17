@@ -27,7 +27,7 @@ class Future < defined?(BasicObject) ? BasicObject : Object
   # @return [Object]
   def __force__
     @thread.join if @thread
-    @promise
+    @promise.__force__
   end
   alias_method :force, :__force__
 
