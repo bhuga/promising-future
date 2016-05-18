@@ -21,6 +21,20 @@ shared_examples_for "A Promise" do
     expect(x).to eq 8
   end
 
+  it "should work in conditions (at least when forced)" do
+    for value in [true, false, nil, 1, "test", [], {}, Object.new]
+      result = (value if value)
+      x = @method.call { value }
+      expect(x.__force__).to eq value
+      expect(x).to eq value
+      expect((value if x.__force__)).to eq result
+      # Unfortunately this can't be done:
+      # expect((value if x)).to eq result
+      # The promise/future itself is always not nil, so we get this instead:
+      expect((value if x)).to eq value
+    end
+  end
+
   it "should respond_to? force" do
     x = @method.call { 3 + 5 }
     expect(x).to respond_to(:force)
@@ -129,15 +143,4 @@ shared_examples_for "A Promise" do
     expect(changeds.size).to eq 10
   end
 
-  describe 'compatibility with Marshal' do
-    it 'should not respond_to? marshal_dump' do
-      x = @method.call { 3 + 5 }
-      expect(x).to_not respond_to(:marshal_dump)
-    end
-
-    it 'should respond_to? _dump' do
-      x = @method.call { 3 + 5 }
-      expect(x).to respond_to(:_dump)
-    end
-  end
 end
