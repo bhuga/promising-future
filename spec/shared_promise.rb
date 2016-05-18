@@ -143,15 +143,4 @@ shared_examples_for "A Promise" do
     expect(changeds.size).to eq 10
   end
 
-  describe 'compatibility with Marshal' do
-    it 'should not respond_to? marshal_dump' do
-      x = @method.call { 3 + 5 }
-      expect(x).to_not respond_to(:marshal_dump)
-    end
-
-    it 'should respond_to? _dump' do
-      x = @method.call { 3 + 5 }
-      expect(x).to respond_to(:_dump)
-    end
-  end
 end

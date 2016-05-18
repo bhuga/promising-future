@@ -33,6 +33,18 @@ describe Promise do
     expect {x = [ 1, @method.call { x / 0 }]}.to_not raise_error
   end
 
+  describe 'compatibility with Marshal' do
+    it 'should not respond_to? marshal_dump' do
+      x = @method.call { 3 + 5 }
+      expect(x).to_not respond_to(:marshal_dump)
+    end
+
+    it 'should respond_to? _dump' do
+      x = @method.call { 3 + 5 }
+      expect(x).to respond_to(:_dump)
+    end
+  end
+
   describe 'an object referencing a promise' do
     class ClassResulting
       attr_reader :value
