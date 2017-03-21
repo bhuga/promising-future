@@ -3,6 +3,8 @@ rvm:
   - 1.9.3
   - 2.1.6
   - 2.2.3
+  - 2.3.3
+  - 2.4.0
   - jruby-head
   - rbx-2
 sudo: false
